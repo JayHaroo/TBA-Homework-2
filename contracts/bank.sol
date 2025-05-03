@@ -10,9 +10,6 @@ contract Bank {
         string name;
     }
 
-    mapping(address => Account) public accounts;
-    mapping(address => uint256) public balances;
-
     Account public account1;
 
     constructor() {
@@ -21,14 +18,16 @@ contract Bank {
 
     function deposit(uint256 setValue) public {
         require(setValue > 0, "Deposit amount must be greater than zero");
-        account1 = Account(setValue, "Account 1");
+        uint256 newValue = account1.balance + setValue;
+        account1 = Account(newValue, "Account 1");
     }
 
     function withdraw(uint256 amount) public {
-        require(balances[msg.sender] >= amount, "Insufficient balance");
-        balances[msg.sender] -= amount;
+        require(amount > 0, "Withdrawal amount must be greater than zero");
+        require(account1.balance >= amount, "Insufficient balance");
+        account1.balance -= amount;
     }
     function getBalance() public view returns (uint256) {
-        return balances[msg.sender];
+        return account1.balance;
     }
 }
