@@ -2,43 +2,41 @@
 pragma solidity ^0.8.9;
 
 contract Bank {
+    string public name;
+
     struct Account {
         uint256 balance;
         string name;
     }
 
-    mapping(address => Account) public accounts;
+    Account public account1;
+    mapping(address => uint256) public balances;
 
     constructor() {
-        // Optionally set an initial account for the deployer
-        accounts[msg.sender] = Account(250, "Default Account");
+        account1 = Account(250, "Account 1");
     }
 
     function deposit(uint256 setValue) public {
         require(setValue > 0, "Deposit amount must be greater than zero");
-        accounts[msg.sender].balance += setValue;
-
-        // If no name is set, assign a default name
-        if (bytes(accounts[msg.sender].name).length == 0) {
-            accounts[msg.sender].name = "Unnamed Account";
-        }
+        account1.balance += setValue;
+        balances[msg.sender] += setValue;
     }
 
     function withdraw(uint256 amount) public {
         require(amount > 0, "Withdrawal amount must be greater than zero");
-        require(accounts[msg.sender].balance >= amount, "Insufficient balance");
-        accounts[msg.sender].balance -= amount;
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+
+        if (account1.balance >= amount) {
+            account1.balance -= amount;
+        }
     }
 
     function getBalance() public view returns (uint256) {
-        return accounts[msg.sender].balance;
+        return balances[msg.sender];
     }
 
-    function setName(string calldata _name) public {
-        accounts[msg.sender].name = _name;
-    }
-
-    function getAccount() public view returns (Account memory) {
-        return accounts[msg.sender];
+    function getAccount1Balance() public view returns (uint256) {
+        return account1.balance;
     }
 }
